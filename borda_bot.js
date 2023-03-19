@@ -1,6 +1,7 @@
 const {Client, Intents} = require('discord.js')
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]})
 const {scheduleJob} = require('node-schedule')
+require('dotenv').config();
 
 const borda_polls = {}
 
@@ -87,5 +88,5 @@ scheduleJob('*/1 * * * *', ()=> {
     display_results()
 })
 
-const TOKEN = "MTA4NTg3NTgxODM4MDY3NzE1MA.GDkYot.mm2QphnWqkJnpb0yepBb1l3m5qcjp1MGNo24xM"
+const TOKEN = process.env.BOT_TOKEN
 client.login(TOKEN)
