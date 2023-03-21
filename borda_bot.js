@@ -4,9 +4,57 @@ const {scheduleJob} = require('node-schedule')
 require('dotenv').config();
 
 const borda_polls = {}
+const commands = [
+    {
+      name: 'borda',
+      description: 'ボルタルールを採用した投票を行います',
+      options: [
+        {
+          name: 'name',
+          type: 'STRING',
+          description: '投票の名前',
+          required: true,
+        },
+        {
+          name: 'options',
+          type: 'STRING',
+          description: '投票のオプション（カンマ区切り）',
+          required: true,
+        },
+        {
+          name: 'duration',
+          type: 'NUMBER',
+          description: '投票の期間（時間）',
+          required: false,
+        },
+      ],
+    },
+    {
+      name: 'vote',
+      description: 'ボルダ投票に投票します',
+      options: [
+        {
+          name: 'name',
+          type: 'STRING',
+          description: '投票の名前',
+          required: true,
+        },
+        {
+          name: 'ranked-options',
+          type: 'STRING',
+          description: '投票のオプションのランク付け（カンマ区切り）',
+          required: true,
+        },
+      ],
+    },
+  ];
+  
 
-client.on('ready', ()=> {
+client.on('ready', async()=> {
     console.log(`Logged in as ${client.user.tag}!`)
+    await client.guilds.cache
+    .get('1053995720845316116')
+    .commands.set(commands);
     display_results()
 })
 
@@ -58,6 +106,53 @@ client.on('messageCreate', async message=> {
       await message.channel.send(`${message.author.username}さんの投票が受け付けられました。`)
     }
 });
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+  
+    const { commandName, options } = interaction;
+    if (commandName === 'borda') {
+      const poll_name = options.getString('name');
+      const duration = options.getNumber('duration') || 24.0;
+      const poll_options = options.getString('options').split(',');
+      if (poll_name in borda_polls) {
+        await interaction.reply(`この名前の投票がすでに存在しています: ${poll_name}`);
+        return;
+      }
+  
+      borda_polls[poll_name] = {
+        options: poll_options,
+        channel: interaction.channelId,
+        end_time: Date.now() + duration * 3600 * 1000,
+      };
+  
+      await interaction.reply(`投票 '${poll_name}' を作成しました。\nオプション: ${poll_options.join(
+        ', '
+      )}\n時間制限: ${duration} 時間`);
+    } else if (commandName === 'vote') {
+      const poll_name = options.getString('name');
+      const ranked_options = options.getString('ranked-options').split(',');
+      if (!(poll_name in borda_polls)) {
+        await interaction.reply(`この名前の投票は存在しません: ${poll_name}`);
+        return;
+      }
+  
+      const poll_options = borda_polls[poll_name].options;
+      if (
+        !poll_options.every(option => ranked_options.includes(option)) ||
+        poll_options.length !== ranked_options.length
+      ) {
+        await interaction.reply('投票のオプションが一致しません。');
+        return;
+      }
+  
+      for (let i = 0; i < ranked_options.length; i++) {
+        borda_polls[poll_name][ranked_options[i]] += poll_options.length - i;
+      }
+  
+      await interaction.reply(`${interaction.user.username}さんの投票が受け付けられました。`);
+    }
+});  
 
 async function display_results() {
     for (const poll_name in borda_polls) {
