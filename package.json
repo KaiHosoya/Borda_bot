@@ -3,5 +3,8 @@
     "discord.js": "^13.3.1",
     "node-schedule": "^2.0.0",
     "dotenv": "^10.0.0"
+  },
+  "scripts": {
+    "start": "node borda_bot.js"
   }
 }
