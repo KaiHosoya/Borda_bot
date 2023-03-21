@@ -114,7 +114,7 @@ client.on('interactionCreate', async interaction => {
     const { commandName, options } = interaction;
     if (commandName === 'borda') {
       const poll_name = options.getString('name');
-      const duration = options.getNumber('duration') || 24.0;
+      const duration = options.getNumber('duration') || 6.0;
       const poll_options = options.getString('options').split(',');
       if (poll_name in borda_polls) {
         await interaction.reply(`この名前の投票がすでに存在しています: ${poll_name}`);
