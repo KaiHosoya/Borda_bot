@@ -3,6 +3,16 @@ const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_M
 const {scheduleJob} = require('node-schedule')
 require('dotenv').config();
 
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 5000;
+app.get('/', (req, res) => {
+  res.send('Discord bot is running.');
+});
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 const borda_polls = {}
 const commands = [
     {
