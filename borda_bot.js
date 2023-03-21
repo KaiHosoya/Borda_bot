@@ -65,7 +65,7 @@ client.on('messageCreate', async message=> {
 
     if (command === 'borda') {
       const poll_name=args.shift()
-      const duration=parseFloat(args.shift()) || 24.0
+      const duration=parseFloat(args.shift()) || 6.0
       const options=args
 
       if (poll_name in borda_polls) {
