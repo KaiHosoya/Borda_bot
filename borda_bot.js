@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 6000;
 app.get('/', (req, res) => {
   res.send('Discord bot is running.');
 });
@@ -63,7 +63,7 @@ const commands = [
 client.on('ready', async()=> {
     console.log(`Logged in as ${client.user.tag}!`)
     // await client.guilds.cache
-    // .get('1053995720845316116')
+    // .get('1087583156879769613')
     // .commands.set(commands);
     await client.application.commands.set(commands);
     display_results()
@@ -136,6 +136,10 @@ client.on('interactionCreate', async interaction => {
         channel: interaction.channelId,
         end_time: Date.now() + duration * 3600 * 1000,
       };
+    // オプションの初期値を設定
+    poll_options.forEach(option => {
+        borda_polls[poll_name][option] = 0;
+    });
   
       await interaction.reply(`投票 '${poll_name}' を作成しました。\nオプション: ${poll_options.join(
         ', '
