@@ -52,9 +52,10 @@ const commands = [
 
 client.on('ready', async()=> {
     console.log(`Logged in as ${client.user.tag}!`)
-    await client.guilds.cache
-    .get('1053995720845316116')
-    .commands.set(commands);
+    // await client.guilds.cache
+    // .get('1053995720845316116')
+    // .commands.set(commands);
+    await client.application.commands.set(commands);
     display_results()
 })
 
